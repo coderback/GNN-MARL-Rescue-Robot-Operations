@@ -42,8 +42,8 @@
   </div>
   <p class="blurb" id="mode-blurb"
      data-basic="Basic: robots wander until they find someone and drones survey at random, with no messages. The eight people here are all there are, so this rate is not comparable with the other modes."
-     data-extended="Extended: robots wait at base until a drone finds someone and sends coordinates. A new group of people appears every 30 steps, up to 30 at once."
-     data-novel="Novel: GNN-MARL policies choose robot and drone actions, starting from the saved checkpoint and still exploring and learning during the run. A mobile charger recharges agents in the field.">Extended: robots wait at base until a drone finds someone and sends coordinates. A new group of people appears every 30 steps, up to 30 at once.</p>
+     data-extended="Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared."
+     data-novel="Novel: GNN-MARL policies choose robot and drone actions, starting from the saved checkpoint and still exploring and learning during the run. A mobile charger recharges agents in the field.">Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared.</p>
   <div class="deck">
     <div>
       <div class="map-wrap">
@@ -107,7 +107,7 @@
           <tr><th scope="row">Novel</th><td class="n">6.4, 21.0%</td><td class="n">6.4, 21.1%</td></tr>
         </tbody>
       </table>
-      <p class="note">Against the project's KPI report of 16 July 2025, Extended reproduces run for run, including message counts. Novel's mean agrees, but its runs differ individually because learning during the run adds randomness.</p>
+      <p class="note">Against the project's KPI report of 16 July 2025, Extended reproduces run for run, including message counts. Novel's mean agrees, but its individual runs differ: the notebook did not seed PyTorch, so its learning runs are not repeatable.</p>
     </div>
   </div>
   <div class="cols3 sec" style="padding-top:28px">
