@@ -86,7 +86,7 @@ function buildSpark(){const host=$('spark');host.textContent='';const s=run.seri
   const m=document.createElementNS(NS,'line');m.id='spark-mark';m.setAttribute('y1',0);m.setAttribute('y2',44);m.setAttribute('class','spark-mark');m.setAttribute('vector-effect','non-scaling-stroke');svg.append(pl,m);host.append(svg)}
 
 function setPlaying(p){playing=p;const b=$('play');b.textContent=p?'Pause':'Play';b.setAttribute('aria-pressed',p);if(p){last=performance.now();requestAnimationFrame(tick)}}
-function tick(now){if(!playing)return;const dt=Math.min(.25,(now-last)/1000);last=now;t+=dt*speed;const end=run.series.rescued.length-1;
+function tick(now){if(!playing)return;const dt=Math.max(0,Math.min(.25,(now-last)/1000));last=now;t+=dt*speed;const end=run.series.rescued.length-1;
   if(t>=end){t=end;draw();setPlaying(false);return}draw();requestAnimationFrame(tick)}
 async function load(m,id,keepT){const key=`${m}-${id}`,token=++seq;$('status').textContent=`Loading recorded run ${MODE_LABEL[m]}, seed ${42+id*100}…`;
   try{if(!cache[key])cache[key]=await fetch(`runs/${key}.json`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()})}
