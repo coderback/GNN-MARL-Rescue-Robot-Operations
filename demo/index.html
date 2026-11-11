@@ -5,142 +5,196 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mountain Rescue: recorded simulation replay</title>
 <meta name="description" content="Browser replay of recorded Mesa runs of a mountain rescue multi-agent simulation in Basic, Extended and GNN-MARL Novel modes, with real metrics. Rule-based Extended mode outperforms the GNN-MARL mode.">
-<meta name="color-scheme" content="light dark">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#13201c">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 rx=%273%27 fill=%27%2313201c%27/%3E%3Cpath d=%27M2 13 8 3l6 10z%27 fill=%27%23ff6b2c%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <a class="skip" href="#replay">Skip to the replay</a>
-<header class="wrap top">
-  <span class="brand">Mountain Rescue</span>
-  <nav aria-label="Sections"><a href="#replay">Replay</a><a href="#results">Results</a><a href="#training">Training</a><a href="https://github.com/coderback/GNN-MARL-Rescue-Robot-Operations">GitHub</a></nav>
+<header class="top">
+  <div class="wrap top-row">
+    <p class="brand">Mountain Rescue</p>
+    <nav aria-label="Sections"><a href="#replay">Replay</a><a href="#results">Results</a><a href="#training">Training</a><a href="#notes">Notes</a></nav>
+    <a class="gh" href="https://github.com/coderback/GNN-MARL-Rescue-Robot-Operations"><span class="hide-s">Source on&nbsp;</span>GitHub</a>
+  </div>
 </header>
 <main>
-<section class="wrap">
-  <h1>Robots, drones and a charger on a simulated mountain.</h1>
-  <p class="lede">A multi-agent simulation built in Mesa, run three ways: random exploration, drones messaging robots, and a graph neural network choosing actions. Across the recorded runs, the rule-based Extended mode rescues about 2.5 times as many people as the GNN-MARL Novel mode.</p>
-  <p class="notice"><strong>These are recorded runs, not a live simulation.</strong> Each one was run with the project's real Mesa code on a local machine, every agent position was saved at every step, and your browser only plays the file back.</p>
-</section>
-
-<section id="replay" class="wrap" aria-labelledby="replay-h">
-  <h2 id="replay-h" class="sr">Replay</h2>
-  <div class="controls">
-    <fieldset class="seg"><legend>Mode</legend>
-      <label><input type="radio" name="mode" value="basic"><span>Basic</span></label>
-      <label><input type="radio" name="mode" value="extended" checked><span>Extended</span></label>
-      <label><input type="radio" name="mode" value="novel"><span>Novel</span></label>
-    </fieldset>
-    <label class="field">Recorded run
-      <select id="seed"><option value="0">Seed 42</option><option value="1">Seed 142</option><option value="2">Seed 242</option><option value="3">Seed 342</option><option value="4">Seed 442</option></select>
-    </label>
-    <label class="field">Speed
-      <select id="speed"><option value="2">2 steps/s</option><option value="6" selected>6 steps/s</option><option value="15">15 steps/s</option><option value="40">40 steps/s</option></select>
-    </label>
-    <label class="check"><input type="checkbox" id="trails" checked> Trails</label>
+<section class="wrap hero" aria-labelledby="hero-h">
+  <div class="hero-text">
+    <p class="eyebrow">Multi-agent simulation · Mesa · GNN-MARL</p>
+    <h1 id="hero-h">Simple rules rescued about 2.5× as many people as the GNN.</h1>
+    <p class="lede">Robots, drones and a charger on a simulated mountain, run three ways: random exploration, drones messaging robots, and a graph neural network choosing actions. Every run here is a recording of the project's real model.</p>
+    <div class="modes" role="img" aria-label="Mean people rescued over five recorded runs: Extended 15.8, Novel 6.4, Basic 4.4">
+      <div class="mode-row"><span class="mode-name">Extended</span><span class="mode-bar"><i style="width:100%;background:var(--c2)"></i></span><span class="mode-val">15.8</span></div>
+      <div class="mode-row"><span class="mode-name">Novel</span><span class="mode-bar"><i style="width:40.5%;background:var(--c3)"></i></span><span class="mode-val">6.4</span></div>
+      <div class="mode-row"><span class="mode-name">Basic</span><span class="mode-bar"><i style="width:27.8%;background:var(--c1)"></i></span><span class="mode-val">4.4</span></div>
+    </div>
+    <p class="modes-note">Mean people rescued over five recorded runs of 500 steps. Basic has only its 8 starting people; in the other modes about 30 appear.</p>
+    <p class="prov"><span class="chip">Recorded runs</span> <span>Not a live simulation: each run was recorded with the real Mesa code and your browser only plays the file back. <a href="#notes">Notes and limits</a></span></p>
   </div>
-  <p class="blurb" id="mode-blurb"
-     data-basic="Basic: robots wander until they find someone and drones survey at random, with no messages. The eight people here are all there are, so this rate is not comparable with the other modes."
-     data-extended="Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared."
-     data-novel="Novel: GNN-MARL policies choose robot and drone actions, starting from the saved checkpoint and still exploring and learning during the run. A mobile charger recharges agents in the field.">Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared.</p>
-  <div class="deck">
-    <div>
-      <div class="map-wrap">
-        <canvas id="map" width="640" height="640" role="img" aria-label="Replay map: 15 by 15 terrain with the base at the bottom left and the summit in the centre. Current positions are listed in the panel beside it."></canvas>
-        <p class="status" id="status" role="status"></p>
+
+  <section id="replay" class="console" aria-labelledby="replay-h">
+    <h2 id="replay-h" class="sr">Replay</h2>
+    <div class="controls">
+      <fieldset class="seg"><legend>Mode</legend>
+        <label><input type="radio" name="mode" value="basic"><span>Basic</span></label>
+        <label><input type="radio" name="mode" value="extended" checked><span>Extended</span></label>
+        <label><input type="radio" name="mode" value="novel"><span>Novel</span></label>
+      </fieldset>
+      <button class="btn primary" id="play" type="button" aria-pressed="false">Play</button>
+      <button class="btn" id="restart" type="button">Restart</button>
+      <div class="opts">
+        <label class="field"><span>Run</span>
+          <select id="seed"><option value="0">Seed 42</option><option value="1">Seed 142</option><option value="2">Seed 242</option><option value="3">Seed 342</option><option value="4">Seed 442</option></select>
+        </label>
+        <label class="field"><span>Speed</span>
+          <select id="speed"><option value="2">2 steps/s</option><option value="6" selected>6 steps/s</option><option value="15">15 steps/s</option><option value="40">40 steps/s</option></select>
+        </label>
+        <label class="check"><input type="checkbox" id="trails" checked> Trails</label>
       </div>
-      <div class="transport">
-        <button class="btn primary" id="play" type="button" aria-pressed="false">Play</button>
-        <button class="btn" id="restart" type="button">Restart</button>
-        <label class="sr" for="scrub">Simulation step</label>
-        <input id="scrub" type="range" min="0" max="500" value="0">
+    </div>
+    <div class="deck">
+      <div class="map-col">
+        <div class="map-wrap">
+          <canvas id="map" width="640" height="640" role="img" aria-label="Replay map: 15 by 15 terrain with the base at the bottom left and the summit in the centre. Current positions are listed in the panel beside it."></canvas>
+          <p class="status" id="status" role="status"></p>
+        </div>
+        <div class="transport">
+          <label class="sr" for="scrub">Simulation step</label>
+          <input id="scrub" type="range" min="0" max="500" value="0">
+        </div>
+        <ul class="legend-map">
+          <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--robot)" d="M1 1h10v10H1z"/></svg>Robot</li>
+          <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--drone)" d="M6 0l6 11H0z"/></svg>Drone</li>
+          <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--charger)" d="M6 0l6 6-6 6-6-6z"/></svg>Charger</li>
+          <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path stroke="var(--missing)" stroke-width="2.4" d="M2 2l8 8M10 2l-8 8"/></svg>Missing</li>
+          <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="none" stroke="var(--rescued)" stroke-width="2" d="M1 6l3.5 4L11 2"/></svg>Rescued</li>
+          <li><span class="swatch" style="background:var(--t0)"></span><span class="swatch" style="background:var(--t1)"></span><span class="swatch" style="background:var(--t2)"></span><span class="swatch" style="background:var(--t3);margin-right:5px"></span>0 to 3K metres</li>
+        </ul>
       </div>
-      <ul class="legend-map">
-        <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--robot)" d="M1 1h10v10H1z"/></svg>Robot</li>
-        <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--drone)" d="M6 0l6 11H0z"/></svg>Drone</li>
-        <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="var(--charger)" d="M6 0l6 6-6 6-6-6z"/></svg>Charger</li>
-        <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path stroke="var(--missing)" stroke-width="2.4" d="M2 2l8 8M10 2l-8 8"/></svg>Missing</li>
-        <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path fill="none" stroke="var(--rescued)" stroke-width="2" d="M1 6l3.5 4L11 2"/></svg>Rescued</li>
-        <li><span class="swatch" style="background:var(--t0)"></span><span class="swatch" style="background:var(--t1)"></span><span class="swatch" style="background:var(--t2)"></span><span class="swatch" style="background:var(--t3);margin-right:5px"></span>0 to 3K metres</li>
-      </ul>
+      <div class="side">
+        <dl class="metrics">
+          <div><dt>Step</dt><dd id="m-step">0</dd></div>
+          <div class="hi"><dt>Rescued</dt><dd id="m-rescued">0</dd></div>
+          <div><dt>Missing</dt><dd id="m-missing">0</dd></div>
+          <div><dt>Messages</dt><dd id="m-messages">0</dd></div>
+        </dl>
+        <div id="spark"></div>
+        <ul class="agents" id="agents"></ul>
+        <p class="eps">People so far: <span id="m-persons">8</span><span id="m-eps-wrap" hidden>. Exploration rate (robot epsilon): <span id="m-eps"></span></span></p>
+      </div>
     </div>
-    <div>
-      <dl class="metrics">
-        <div><dt>Step</dt><dd id="m-step">0</dd></div>
-        <div class="hi"><dt>Rescued</dt><dd id="m-rescued">0</dd></div>
-        <div><dt>Missing</dt><dd id="m-missing">0</dd></div>
-        <div><dt>Messages</dt><dd id="m-messages">0</dd></div>
-      </dl>
-      <div id="spark"></div>
-      <ul class="agents" id="agents"></ul>
-      <p class="eps">People so far: <span id="m-persons">8</span><span id="m-eps-wrap" hidden>. Exploration rate (robot epsilon): <span id="m-eps"></span></span></p>
-      <p class="run-note" id="run-note"></p>
+    <div class="console-foot">
+      <p class="blurb" id="mode-blurb"
+         data-basic="Basic: robots wander until they find someone and drones survey at random, with no messages. The eight people here are all there are, so this rate is not comparable with the other modes."
+         data-extended="Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared."
+         data-novel="Novel: GNN-MARL policies choose robot and drone actions, starting from the saved checkpoint and still exploring and learning during the run. A mobile charger recharges agents in the field.">Extended: robots wait at base until a drone finds someone and sends coordinates. A few more people appear every 30 steps until about 30 have appeared.</p>
+      <p class="run-note"><span id="run-note"></span> Your browser only plays the file back.</p>
+    </div>
+  </section>
+</section>
+
+<section id="results" class="band band-dark" aria-labelledby="results-h">
+  <div class="wrap">
+    <h2 id="results-h">Extended beats the GNN</h2>
+    <p class="sub">Five recorded runs per mode, 500 steps each, using the project's KPI configuration: 15×15 terrain, 4 robots, 3 drones, 8 starting people. Novel adds one charger.</p>
+    <div class="cards">
+      <article class="card" style="--k:var(--c1)">
+        <h3>Basic</h3>
+        <p>Robots explore at random and drones survey without messaging. Only the 8 starting people.</p>
+        <p class="card-res">4.4 ± 1.5</p>
+        <p class="card-sub">55.0% of people rescued</p>
+      </article>
+      <article class="card" style="--k:var(--c2)">
+        <h3>Extended</h3>
+        <p>Robots wait at base until a drone finds someone and sends coordinates.</p>
+        <p class="card-res">15.8 ± 4.4</p>
+        <p class="card-sub">52.4% rescued · 56.4 messages</p>
+      </article>
+      <article class="card" style="--k:var(--c3)">
+        <h3>Novel</h3>
+        <p>A graph neural network chooses actions, still exploring as it runs, with one added charger.</p>
+        <p class="card-res">6.4 ± 2.9</p>
+        <p class="card-sub">21.1% rescued · 23.6 messages</p>
+      </article>
+    </div>
+    <div class="two">
+      <div>
+        <h3>Mean people rescued over a run</h3>
+        <div id="c-rescues" class="chart"></div>
+      </div>
+      <div>
+        <table>
+          <caption class="sr">Mean results per mode over five recorded runs</caption>
+          <thead><tr><th scope="col">Mode, 5 runs</th><th scope="col" class="n">Rescued</th><th scope="col" class="n">Rate</th><th scope="col" class="n">Messages</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Basic (8 people only)</th><td class="n">4.4 ± 1.5</td><td class="n">55.0%</td><td class="n">n/a</td></tr>
+            <tr><th scope="row">Extended (about 30 people)</th><td class="n"><b>15.8 ± 4.4</b></td><td class="n"><b>52.4%</b></td><td class="n">56.4</td></tr>
+            <tr><th scope="row">Novel (about 30 people)</th><td class="n">6.4 ± 2.9</td><td class="n">21.1%</td><td class="n">23.6</td></tr>
+          </tbody>
+        </table>
+        <p class="note">The rate is rescued divided by everyone who appeared, as the project's notebooks compute it. Five runs is a small sample.</p>
+        <h3 class="mt-s">Do the recordings match the saved KPIs?</h3>
+        <table>
+          <thead><tr><th scope="col">Mode</th><th scope="col" class="n">Saved report</th><th scope="col" class="n">Recorded here</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Extended</th><td class="n">15.8, 52.4%</td><td class="n">15.8, 52.4%</td></tr>
+            <tr><th scope="row">Novel</th><td class="n">6.4, 21.0%</td><td class="n">6.4, 21.1%</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Against the project's KPI report of 16 July 2025, Extended reproduces run for run, including message counts. Novel's mean agrees, but its individual runs differ: the notebook did not seed PyTorch, so its learning runs are not repeatable.</p>
+      </div>
+    </div>
+    <h3 class="mt">Every recorded run</h3>
+    <div class="tscroll" tabindex="0" role="region" aria-label="All fifteen recorded runs">
+      <table>
+        <thead><tr><th scope="col">Run (select to replay)</th><th scope="col" class="n">Rescued</th><th scope="col" class="n">People</th><th scope="col" class="n">Rate</th><th scope="col" class="n">Messages</th></tr></thead>
+        <tbody id="runs-body"></tbody>
+      </table>
     </div>
   </div>
 </section>
 
-<section id="results" class="wrap sec" aria-labelledby="results-h">
-  <h2 id="results-h">Extended beats the GNN</h2>
-  <p class="sub">Five recorded runs per mode, 500 steps each, using the project's KPI configuration: 15×15 terrain, 4 robots, 3 drones, 8 starting people. Novel adds one charger.</p>
-  <div class="two">
-    <div>
-      <h3>Mean people rescued over a run</h3>
-      <div id="c-rescues" class="chart"></div>
+<section id="training" class="band" aria-labelledby="training-h">
+  <div class="wrap">
+    <h2 id="training-h">Training did not show learning</h2>
+    <div class="two">
+      <div>
+        <h3>Rescue rate per training episode</h3>
+        <div id="c-train" class="chart"></div>
+        <p class="note">From <code>results/training_metrics.json</code>. Tab to the chart and use the arrow keys to read values.</p>
+      </div>
+      <div>
+        <p class="find"><strong>No upward trend over 250 episodes.</strong> Mean rescue rate is 5.8% in the first 50 episodes and 5.7% in the last 50. The best episode, 46.7%, came early, and all five periodic evaluations are recorded as 0.0.</p>
+        <p class="find"><strong>Curriculum learning stayed on the easiest stage.</strong> <code>results_curriculum/</code> holds 101 episodes on an 8×8 map with 2 robots and 1 drone. The mean rescue rate was 46.2% over the last 30 episodes. It moved up a stage at episode 100, fell back at episode 101, and completed no stages. Both of its evaluations are recorded as 0.0.</p>
+        <p class="note">So the GNN-MARL system runs end to end with dynamic graphs, but these saved results do not show it outperforming the rule-based coordination it was meant to improve on.</p>
+      </div>
     </div>
-    <div>
-      <table>
-        <caption class="sr">Mean results per mode over five recorded runs</caption>
-        <thead><tr><th scope="col">Mode, 5 runs</th><th scope="col" class="n">Rescued</th><th scope="col" class="n">Rate</th><th scope="col" class="n">Messages</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Basic (8 people only)</th><td class="n">4.4 ± 1.5</td><td class="n">55.0%</td><td class="n">n/a</td></tr>
-          <tr><th scope="row">Extended (about 30 people)</th><td class="n"><b>15.8 ± 4.4</b></td><td class="n"><b>52.4%</b></td><td class="n">56.4</td></tr>
-          <tr><th scope="row">Novel (about 30 people)</th><td class="n">6.4 ± 2.9</td><td class="n">21.1%</td><td class="n">23.6</td></tr>
-        </tbody>
-      </table>
-      <p class="note">The rate is rescued divided by everyone who appeared, as the project's notebooks compute it. Five runs is a small sample.</p>
-      <h3 style="margin-top:20px">Do the recordings match the saved KPIs?</h3>
-      <table>
-        <thead><tr><th scope="col">Mode</th><th scope="col" class="n">Saved report</th><th scope="col" class="n">Recorded here</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Extended</th><td class="n">15.8, 52.4%</td><td class="n">15.8, 52.4%</td></tr>
-          <tr><th scope="row">Novel</th><td class="n">6.4, 21.0%</td><td class="n">6.4, 21.1%</td></tr>
-        </tbody>
-      </table>
-      <p class="note">Against the project's KPI report of 16 July 2025, Extended reproduces run for run, including message counts. Novel's mean agrees, but its individual runs differ: the notebook did not seed PyTorch, so its learning runs are not repeatable.</p>
-    </div>
-  </div>
-  <div class="cols3 sec" style="padding-top:28px">
-    <div><h3>Novel is exploring</h3><p>The checkpoint loads weights (50 episodes, 25,000 training steps) but not the exploration rate, so each run restarts at epsilon 0.9 and only falls to 0.554 by the end. These runs show the mode as the project ran it, not a greedy evaluation of the policy.</p></div>
-    <div><h3>Novel's clock differs</h3><p>In Novel mode the model's step counter advances twice per tick (1,000 by the end) and the spawner runs twice. Its map reaches the 30-person cap by about tick 105 to 150, against 240 to 300 in Extended, so Novel faces more people earlier.</p></div>
-    <div><h3>Where the code came from</h3><p>The recordings use the author's working copy. The public repo does not yet include <code>src/gnn_marl.py</code> or the checkpoint, so Novel cannot be re-run from GitHub alone. The recorder is in <code>demo/tools/</code>.</p></div>
-  </div>
-  <h3 class="mt" style="margin-top:32px">Every recorded run</h3>
-  <div class="tscroll" tabindex="0" role="region" aria-label="All fifteen recorded runs">
-    <table>
-      <thead><tr><th scope="col">Run (select to replay)</th><th scope="col" class="n">Rescued</th><th scope="col" class="n">People</th><th scope="col" class="n">Rate</th><th scope="col" class="n">Messages</th></tr></thead>
-      <tbody id="runs-body"></tbody>
-    </table>
   </div>
 </section>
 
-<section id="training" class="wrap sec" aria-labelledby="training-h">
-  <h2 id="training-h">Training did not show learning</h2>
-  <div class="two">
-    <div>
-      <h3>Rescue rate per training episode</h3>
-      <div id="c-train" class="chart"></div>
-      <p class="note">From <code>results/training_metrics.json</code>. Tab to the chart and use the arrow keys to read values.</p>
-    </div>
-    <div>
-      <p class="find"><strong>No upward trend over 250 episodes.</strong> Mean rescue rate is 5.8% in the first 50 episodes and 5.7% in the last 50. The best episode, 46.7%, came early, and all five periodic evaluations are recorded as 0.0.</p>
-      <p class="find"><strong>Curriculum learning stayed on the easiest stage.</strong> <code>results_curriculum/</code> holds 101 episodes on an 8×8 map with 2 robots and 1 drone. The mean rescue rate was 46.2% over the last 30 episodes. It moved up a stage at episode 100, fell back at episode 101, and completed no stages. Both of its evaluations are recorded as 0.0.</p>
-      <p class="note">So the GNN-MARL system runs end to end with dynamic graphs, but these saved results do not show it outperforming the rule-based coordination it was meant to improve on.</p>
+<section id="notes" class="band band-dark" aria-labelledby="notes-h">
+  <div class="wrap">
+    <h2 id="notes-h">Notes and limits</h2>
+    <p class="sub"><strong>These are recorded runs, not a live simulation.</strong> Each one was run with the project's real Mesa code on a local machine, every agent position was saved at every step, and your browser only plays the file back. Agent battery, terrain and state values on this page come from the recordings.</p>
+    <div class="cols3">
+      <div><h3>Novel is exploring</h3><p>The checkpoint loads weights (50 episodes, 25,000 training steps) but not the exploration rate, so each run restarts at epsilon 0.9 and only falls to 0.554 by the end. These runs show the mode as the project ran it, not a greedy evaluation of the policy.</p></div>
+      <div><h3>Novel's clock differs</h3><p>In Novel mode the model's step counter advances twice per tick (1,000 by the end) and the spawner runs twice. Its map reaches the 30-person cap by about tick 105 to 150, against 240 to 300 in Extended, so Novel faces more people earlier.</p></div>
+      <div><h3>Where the code came from</h3><p>The recordings use the author's working copy. The public repo does not yet include <code>src/gnn_marl.py</code> or the checkpoint, so Novel cannot be re-run from GitHub alone. The recorder is in <code>demo/tools/</code>.</p></div>
     </div>
   </div>
 </section>
 </main>
-<footer class="wrap foot"><p>Recorded runs, read-only. Source: <a href="https://github.com/coderback/GNN-MARL-Rescue-Robot-Operations">coderback/GNN-MARL-Rescue-Robot-Operations</a>. Agent battery, terrain and state values on this page come from the recordings.</p></footer>
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p>Built by Timothy Ojebiyi as a portfolio demo. Recorded runs, read-only; five runs per mode is a small sample.</p>
+    <p class="foot-links"><a href="https://timothyojebiyi.com">Portfolio</a><a href="https://github.com/coderback/GNN-MARL-Rescue-Robot-Operations">Source on GitHub</a><a href="#notes">Notes and limits</a></p>
+  </div>
+</footer>
 <div id="tip" class="tip" role="status" hidden></div>
 <script src="app.js"></script>
 </body>
